@@ -1,66 +1,46 @@
 package com.gjee.leetcode;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Leet_27_BipartiteGraph {
+public class Leet_27_BipartiteGraph2 {
 
-	//video: https://youtu.be/0ACfAqs8mm0
-		boolean isBipatrite(List<Integer>[] adj, int N, int node, int[] color){
+	//from : leetcode solution
+	  ArrayList<Integer>[] graph;
+	  Map<Integer, Integer> color;
 
-			Deque<Integer> q = new ArrayDeque<>();
-			q.push(node);
-			color[node]=1;
+	    public boolean possibleBipartition(int N, int[][] dislikes) {
+	        graph = new ArrayList[N+1];
+	        for (int i = 1; i <= N; ++i)
+	            graph[i] = new ArrayList<Integer>();
 
-			while(!q.isEmpty()){
-				int curr = q.getFirst();
-				q.remove();
+	        for (int[] edge: dislikes) {
+	            graph[edge[0]].add(edge[1]);
+	            graph[edge[1]].add(edge[0]);
+	        }
 
-				for(int ele:adj[curr]){
-					if(color[ele]==color[curr]) //odd cycle
-						return false;
-					if(color[ele]==-1){
-						color[ele] = 1- color[curr];
-						q.push(ele);
-					}
-				}
-			}
-			return true;
-		}
-		public boolean possibleBipartition(int N, int[][] dislikes) {
-			ArrayList<Integer>[] adj = new ArrayList[N+1];
+	        color = new HashMap<Integer, Integer>();
+	        for (int node = 1; node <= N; ++node)
+	            if (!color.containsKey(node) && !dfs(node, 0))
+	                return false;
+	        return true;
+	    }
 
-			// initializing 
-			for (int i = 0; i < N+1; i++) { 
-				adj[i] = new ArrayList<Integer>(); 
-			} 
-			for(int i=0;i<dislikes.length;++i){
-				adj[dislikes[i][0]].add(dislikes[i][1]);
-				adj[dislikes[i][1]].add(dislikes[i][0]);//??
-			}
+	    public boolean dfs(int node, int c) {
+	        if (color.containsKey(node))
+	            return color.get(node) == c;
+	        color.put(node, c);
 
-			int []color = new int[N+1];
-			Arrays.fill(color,-1);
-			for(int i=1;i<=N;++i){
-				if(color[i]==-1){
-					if(!isBipatrite(adj,N,i,color)){
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
-	
+	        for (int nei: graph[node])
+	            if (!dfs(nei, c ^ 1))
+	                return false;
+	        return true;
+	    }
 
     public static void main(String[] args) {
 	
-    	Leet_27_BipartiteGraph  o = new Leet_27_BipartiteGraph();
+    	Leet_27_BipartiteGraph2  o = new Leet_27_BipartiteGraph2();
 
 		int[][] arr0 =
 
